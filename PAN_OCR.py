@@ -1,3 +1,9 @@
+# For this PAN-OCR project, I have used 2 different OCRs
+# tesseract for extracting the PAN card no. and easyocr for extracting the DOBs
+# This done because both tend to misrecognise each others thing, that is
+# tesseract mis-recognised DOBs and easyocr mis-recognised PAN card no.
+
+# importing required modules
 from PIL import Image,ImageEnhance,ImageOps
 import pytesseract as tes
 import os
@@ -5,7 +11,7 @@ import datetime
 import easyocr as eas
 
 
-# Increase contrast of all the images and then saving them
+# Increasing contrast of all the images and then saving them
 # This is done so as to increase the accuracy of the ocr engine
 
 path='findmind//original' #directory of original images
@@ -26,16 +32,18 @@ path2='findmind//img' #directory of high-contrast images
 tes_data=[] #for storing tesseract ocr text
 eas_data=[] #for storing easyocr text
 
+
 # iterating over the "high contrast" image directory
 # then extracting and storing text using both OCRs
 for f in os.listdir(path2):
     im_path=os.path.join(path2,f)
     im=Image.open(im_path)
 
-
+    #extracting text using tesseract
     text1=tes.image_to_string(im,'eng')
     tes_data.append(text1.split())
-
+    
+    #extractinf text using easyocr
     reader=eas.Reader(['en'],False)
     text2=reader.readtext(im_path)
     eas_data.append(text2)
@@ -60,7 +68,7 @@ def find_pan(str):
 def find_dob(date_text):
     try:
         date=datetime.datetime.strptime(date_text, '%d/%m/%Y').date()
-        return date.strftime('%d-%m-%Y')
+        return date.strftime('%d-%m-%Y') #changing date format to dd/mm/yyyy
     except:
         pass
 
